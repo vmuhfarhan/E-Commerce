@@ -12,6 +12,6 @@ if [ -z "$PROJECT_NAME" ]; then\n\
 fi\n\
 echo "Django project name: ${PROJECT_NAME}"\n\
 gunicorn ${PROJECT_NAME}.wsgi:application\n'\
-/app/run.sh && chmod +x /app/run.sh
+> /app/run.sh && chmod +x /app/run.sh
 
 CMD ["/app/run.sh"]
