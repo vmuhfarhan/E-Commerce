@@ -15,4 +15,3 @@ gunicorn ${PROJECT_NAME}.wsgi:application\n'\
 /app/run.sh && chmod +x /app/run.sh
 
 CMD ["/app/run.sh"]
-Dockerfile
