@@ -2,6 +2,7 @@ Nama : Muhammad Farhan Ramadhan
 NPM : 2306231422
 Kelas : PBP A (AFK)
 
+Tugas 2
 1. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
 
     Step 1: Membuat setup virtual environment menggunakan Python Virtual Environment dengan command di Terminal `python -m venv env` atau `python -m virtualenv env`. Setelahnya, aktifkan virtual environment dengan command `env\Scripts\activate`.
@@ -85,3 +86,6 @@ Kelas : PBP A (AFK)
 
 5. Mengapa model pada Django disebut sebagai ORM?
     Django menggunakan konsep OOP dan relasi untuk menghubungkan aplikasi dengan database secara relasional tanpa menggunakan SQL sehingga memudahkan pengembang untuk bekerja dengan menuliskan Object tanpa SQL. Django menyediakan API yang juga mudah digunakan untuk operasi CRUD (Create, Read, Update, Delete)
+
+
+Tugas 3
