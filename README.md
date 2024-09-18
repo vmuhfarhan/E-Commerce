@@ -89,3 +89,110 @@ Tugas 2
 
 
 Tugas 3
+1. Jelaskan mengapa kita memerlukan data delivery dalam pengimplementasian sebuah platform?
+
+    Data delivery penting dalam pengimplementasian platform karena memungkinkan pertukaran informasi antar komponen sistem, baik internal maupun eksternal, dengan cara yang terstruktur dan efisien. Dalam platform modern, berbagai layanan, modul, dan aplikasi harus berkomunikasi satu sama lain dan bertukar data untuk mendukung fungsionalitas yang lebih luas. Tanpa mekanisme data delivery yang efisien, sistem akan mengalami keterlambatan, kekurangan data, atau bahkan kegagalan dalam menjalankan operasi yang dibutuhkan. Selain itu, data delivery yang baik memastikan bahwa data dikirim dengan aman, tepat waktu, dan dalam format yang benar, mendukung kinerja platform dan pengalaman pengguna yang lancar.
+
+2. Menurutmu, mana yang lebih baik antara XML dan JSON? Mengapa JSON lebih populer dibandingkan XML?
+
+    Secara umum, JSON lebih disukai daripada XML dalam konteks web modern, terutama untuk API dan komunikasi data ringan. Namun, pemilihan antara keduanya tergantung pada kasus penggunaannya. XML lebih baik untuk dokumen yang kompleks dan membutuhkan metadata atau hierarki yang lebih kaya, serta untuk aplikasi yang menggunakan markup seperti dokumen atau format yang membutuhkan validasi yang kuat.
+
+    Namun, JSON lebih populer karena beberapa alasan:
+    - JSON lebih ringan dan sederhana, sehingga lebih mudah dibaca oleh manusia dan lebih cepat diproses oleh mesin.
+    - JSON adalah format asli untuk JavaScript, sehingga lebih mudah diintegrasikan dalam aplikasi web.
+    - JSON lebih hemat ruang dan lebih efisien saat dikirimkan melalui jaringan, membuatnya ideal untuk API yang memerlukan respon cepat.
+    - Banyak framework modern seperti Django, Flask, dan Node.js secara default menggunakan JSON untuk komunikasi data.
+
+3. Jelaskan fungsi dari method is_valid() pada form Django dan mengapa kita membutuhkan method tersebut?
+
+    Method is_valid() pada form Django berfungsi untuk memvalidasi data yang di-input oleh pengguna berdasarkan aturan yang telah ditentukan di form atau model terkait. Jika semua data valid sesuai kriteria, method ini akan mengembalikan nilai True, dan jika tidak, method akan mengembalikan nilai False serta menyediakan pesan kesalahan yang dapat ditampilkan kepada pengguna. 
+    
+    Kita membutuhkan method ini untuk:
+    a. Memastikan bahwa data yang masuk sesuai dengan format atau tipe data yang diharapkan (misalnya, email yang valid, angka yang berada dalam rentang tertentu, dll)
+    b. Memberikan pesan kesalahan yang informatif ketika ada data yang tidak valid, sehingga pengguna dapat memperbaikinya sebelum form disubmit ulang
+    c. Memastikan bahwa hanya data yang valid yang masuk ke dalam sistem atau database
+
+4. Mengapa kita membutuhkan csrf_token saat membuat form di Django? Apa yang dapat terjadi jika kita tidak menambahkan csrf_token pada form Django? Bagaimana hal tersebut dapat dimanfaatkan oleh penyerang?
+
+    csrf_token diperlukan untuk mencegah CSRF (Cross-Site Request Forgery), yaitu jenis serangan di mana penyerang memanfaatkan sesi pengguna yang sudah aktif untuk mengirim permintaan yang tidak sah ke server. Django secara otomatis menghasilkan csrf_token untuk setiap form yang aman, yang harus diverifikasi oleh server saat form tersebut di-submit.
+
+    Jika kita tidak menambahkan csrf_token, maka form tersebut rentan terhadap serangan CSRF. Misalnya, penyerang bisa membuat pengguna yang tidak sadar untuk mengklik tautan atau mengirim form dari situs lain, yang dapat mengubah data penting atau menyebabkan tindakan berbahaya lainnya seperti mengubah pengaturan akun atau mentransfer dana.
+
+    Tanpa csrf_token, penyerang dapat mengeksploitasi sesi pengguna yang aktif dengan mengirim permintaan palsu. Server tidak akan dapat memverifikasi apakah permintaan yang diterima sah atau berasal dari pengguna yang berwenang. Hal ini dapat mengakibatkan modifikasi data yang tidak sah, yang pada akhirnya membahayakan integritas dan keamanan platform serta pengguna.
+
+5. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
+
+    1. Membuat Input Form: Dimulai dengan membuat model Sepatu, lalu dilanjutkan dengan membuat form ShoesEntryForm yang merupakan form berbasis model. Setelah itu, saya membuat view untuk menampilkan form dan memproses input dari pengguna, serta menyimpan data ke database menggunakan method save().
+    
+    `Code Entry (forms.py)`
+    from django.forms import ModelForm
+    from main.models import Sepatu
+
+    class ShoesEntryForm(ModelForm):
+        class Meta:
+            model = Sepatu
+            fields = ["name", "description", "price"]
+
+    `Code Entry (views.py)`
+    def create_shoes_entry(request):
+        form = ShoesEntryForm(request.POST or None)
+
+        if form.is_valid() and request.method == "POST":
+            form.save()
+            return redirect('main:show_main')
+
+        context = {'form': form}
+        return render(request, "create_shoes_entry.html", context)
+
+    2. Menambahkan 4 Fungsi Views untuk JSON dan XML: Saya kemudian menambahkan views baru (show_xml, show_json, show_xml_by_id, show_json_by_id) menggunakan serializers dari Django untuk mengubah objek model Sepatu menjadi format JSON dan XML. Untuk JSON dan XML berdasarkan ID, saya menggunakan filter berdasarkan primary key (id).
+
+    `Code Entry (views.py)`
+    def show_xml(request):
+        data = Sepatu.objects.all()
+        return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+
+    def show_json(request):
+        data = Sepatu.objects.all()
+        return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+
+    def show_xml_by_id(request, id):
+        data = Sepatu.objects.filter(pk=id)
+        return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+
+    def show_json_by_id(request, id):
+        data = Sepatu.objects.filter(pk=id)
+        return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+
+    3. Membuat Routing URL: Setelah views selesai, saya membuat rute di urls.py untuk menghubungkan setiap view ke URL yang sesuai. Ini memungkinkan saya mengakses data sepatu dalam format JSON/XML di URL seperti /json/, /xml/, serta /json/<id> dan /xml/<id>.
+
+    `Code Entry (urls.py)`
+    from django.urls import path
+    from main.views import show_main, create_shoes_entry, show_xml, show_json, show_xml_by_id, show_json_by_id
+
+    app_name = 'main'
+
+    urlpatterns = [
+        path('', show_main, name='show_main'),  
+        path('create-shoes-entry', create_shoes_entry, name='create_shoes_entry'),
+        path('xml/', show_xml, name='show_xml'),
+        path('json/', show_json, name='show_json'),
+        path('xml/<str:id>/', show_xml_by_id, name='show_xml_by_id'),
+        path('json/<str:id>/', show_json_by_id, name='show_json_by_id'),
+    ]
+
+    4. Testing dengan Postman: Langkah terakhir adalah menguji URL yang dibuat menggunakan Postman untuk memastikan bahwa semua data dapat ditampilkan dalam format JSON dan XML, baik secara keseluruhan maupun berdasarkan ID.
+
+    ## Hasil Akses URL di Postman
+
+    ### 1. Semua Data Sepatu dalam Format XML
+    ![XML All]("C:\Users\FARHAN\Downloads\github tugas 3\Screenshot (447).png")
+
+    ### 2. Semua Data Sepatu dalam Format JSON
+    ![JSON All]("C:\Users\FARHAN\Downloads\github tugas 3\Screenshot (448).png")
+
+    ### 3. Data Sepatu Berdasarkan ID dalam Format XML
+    ![XML by ID]("C:\Users\FARHAN\Downloads\github tugas 3\Screenshot (449).png")
+
+    ### 4. Data Sepatu Berdasarkan ID dalam Format JSON
+    ![JSON by ID]("C:\Users\FARHAN\Downloads\github tugas 3\Screenshot (450).png")
+
