@@ -196,3 +196,177 @@ Tugas 3
     ### 4. Data Sepatu Berdasarkan ID dalam Format JSON
     ![JSON by ID]("C:\Users\FARHAN\Downloads\github tugas 3\Screenshot (450).png")
 
+Tugas 3
+1. Apa perbedaan antara HttpResponseRedirect() dan redirect()?
+    - HttpResponseRedirect() adalah class Django yang digunakan untuk mengarahkan (redirect) pengguna ke URL tertentu. HttpResponseRedirect() memerlukan argumen berupa URL yang dituju. Ini adalah respons HTTP dengan status code 302 yang mengarahkan browser untuk menuju URL baru.
+    - redirect() adalah shortcut yang lebih praktis untuk melakukan pengalihan (redirect) dalam Django. Selain URL, redirect() dapat menerima nama view, bahkan objek model sebagai argumen. Fungsi ini secara otomatis menangani detail pengalihan dan mempermudah penggunaannya.
+
+2. Jelaskan cara kerja penghubungan model Product dengan User!
+    Dalam Django, penghubungan antara model Product dan User dilakukan dengan menggunakan relasi ForeignKey. Relasi ini menghubungkan setiap instance dari model Product dengan satu instance dari model User, di mana produk tersebut dimiliki oleh pengguna tertentu.
+
+    ` models.py `
+    class Sepatu(models.Model):
+        user = models.ForeignKey(User, on_delete=models.CASCADE) --> Penggunaan ForeignKey
+        id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+        name = models.CharField(max_length=255)
+        description = models.TextField()
+        price = models.IntegerField()
+
+3.  Apa perbedaan antara authentication dan authorization, apakah yang dilakukan saat pengguna login? Jelaskan bagaimana Django mengimplementasikan kedua konsep tersebut.
+
+    Authentication (Autentikasi) merupakan proses untuk memverifikasi identitas pengguna. Pengguna diminta untuk memasukkan kredensial seperti username dan password, dan jika sesuai dengan data di database, pengguna dianggap berhasil terotentikasi. Autentikasi bertujuan untuk memastikan siapa pengguna tersebut. 
+    
+    Authorization (Otorisasi) merupakan proses menentukan apa yang boleh dilakukan oleh pengguna yang sudah terautentikasi. Ini mengacu pada izin atau hak akses pengguna terhadap sumber daya atau fitur dalam aplikasi. Otorisasi menentukan apakah pengguna memiliki hak untuk melakukan tindakan tertentu, seperti mengakses halaman admin atau mengedit data.
+
+    Saat pengguna login, proses yang dilakukan adalah autentikasi. Django memverifikasi kredensial yang diberikan pengguna. Jika valid, pengguna akan dianggap terotentikasi. Setelah berhasil login, proses otorisasi akan memastikan bahwa pengguna hanya dapat mengakses halaman atau melakukan tindakan yang sesuai dengan izin mereka.
+
+    Implementasi Authentication:
+    `views.py`
+    from django.contrib.auth import authenticate, login
+
+    def login_user(request):
+        if request.method == 'POST':
+            form = AuthenticationForm(data=request.POST)
+
+            if form.is_valid():
+                    user = form.get_user()
+                    login(request, user)
+                    response = HttpResponseRedirect(reverse("main:show_main"))
+                    response.set_cookie('last_login', str(datetime.datetime.now()))
+                    return response
+
+        else:
+            form = AuthenticationForm(request)
+        context = {'form': form}
+        return render(request, 'login.html', context)
+
+    Implementasi Authorization:
+    `views.py`
+    from django.contrib.auth.decorators import login_required
+
+    @login_required(login_url='/login')
+    def show_main(request):
+        shoes_entries = Sepatu.objects.filter(user=request.user)
+
+        context = {
+            'namaAplikasi' : 'E-Commerce',
+            'nama': request.user.username,
+            'kelas': 'PBP A',
+            'shoes_entries': shoes_entries,
+            'last_login': request.COOKIES['last_login'],
+        }
+
+        return render(request, "main.html", context)
+
+4. Bagaimana Django mengingat pengguna yang telah login? Jelaskan kegunaan lain dari cookies dan apakah semua cookies aman digunakan?
+
+    Cara Django mengingat pengguna yang telah login adalah Django menggunakan sistem session untuk mengingat pengguna yang telah login. Setelah pengguna login, Django menyimpan session ID di server dan mengirimkan cookies ke browser pengguna yang berisi session ID tersebut. Setiap kali pengguna mengirimkan request berikutnya, cookies tersebut dikirimkan kembali ke server untuk mengidentifikasi pengguna.
+
+    Adapun kegunaan lain dari cookies adalah Cookies sering digunakan untuk menyimpan pengaturan preferensi seperti bahasa atau tema. Cookies bisa melacak aktivitas pengguna, seperti barang yang ditambahkan ke keranjang belanja di e-commerce. Cookies dapat digunakan untuk mengingat pengguna sehingga pengguna tidak perlu login setiap kali mengakses aplikasi.
+
+    Tidak semua cookies aman, terutama jika tidak dikelola dengan benar. Cookies yang berisi informasi sensitif dapat menjadi target serangan seperti pencurian identitas atau session hijacking.
+
+5. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial)!
+
+    1. Mengimplementasikan fungsi registrasi, login, dan logout untuk memungkinkan pengguna untuk mengakses aplikasi sebelumnya dengan lancar.
+
+        `views.py`
+        from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+        from django.contrib.auth import authenticate, login, logout
+        from django.contrib.auth.decorators import login_required
+
+        **Buat view untuk menangani registrasi pengguna baru menggunakan UserCreationForm dari Django. Setelah pengguna mengirimkan form pendaftaran dan berhasil diverifikasi, login otomatis dilakukan atau pengguna diarahkan ke halaman login.
+
+        def register(request):
+            form = UserCreationForm()
+
+            if request.method == "POST":
+                form = UserCreationForm(request.POST)
+                if form.is_valid():
+                    form.save()
+                    messages.success(request, 'Your account has been successfully created!')
+                    return redirect('main:login')
+            context = {'form':form}
+            return render(request, 'register.html', context)
+
+        ** Buat view untuk login menggunakan AuthenticationForm bawaan Django. Pastikan pengguna yang login berhasil diarahkan ke halaman utama atau halaman tujuan setelah autentikasi.
+
+        def login_user(request):
+        if request.method == 'POST':
+            form = AuthenticationForm(data=request.POST)
+
+            if form.is_valid():
+                    user = form.get_user()
+                    login(request, user)
+                    response = HttpResponseRedirect(reverse("main:show_main"))
+                    response.set_cookie('last_login', str(datetime.datetime.now()))
+                    return response
+
+        else:
+            form = AuthenticationForm(request)
+        context = {'form': form}
+        return render(request, 'login.html', context)
+
+        ** Gunakan view logout bawaan Django untuk menangani proses logout dan membersihkan session pengguna. Setelah logout, arahkan pengguna ke halaman login atau halaman utama.
+
+        def logout_user(request):
+            logout(request)
+            response = HttpResponseRedirect(reverse('main:login'))
+            response.delete_cookie('last_login')
+            return response
+
+    2. Membuat dua akun pengguna dengan masing-masing tiga dummy data menggunakan model yang telah dibuat pada aplikasi sebelumnya untuk setiap akun di lokal.
+
+    3. Menghubungkan model Product dengan User.
+        Di model Product, tambahkan atribut owner yang merupakan ForeignKey ke model User. Ini memungkinkan setiap produk memiliki satu pemilik yang merupakan pengguna terdaftar.
+
+        `models.py`
+        from django.contrib.auth.models import User
+
+        class Sepatu(models.Model):
+            user = models.ForeignKey(User, on_delete=models.CASCADE)
+            id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+            name = models.CharField(max_length=255)
+            description = models.TextField()
+            price = models.IntegerField()
+
+        Saat menambahkan data ke Product, pastikan bahwa produk tersebut memiliki hubungan dengan pengguna yang sedang login. Ketika pengguna membuat produk baru, relasi dengan pengguna disimpan di atribut owner.
+
+        `views.py`
+        def create_shoes_entry(request):
+            form = ShoesEntryForm(request.POST or None)
+
+            if form.is_valid() and request.method == "POST":
+                shoes_entries = form.save(commit=False)
+                shoes_entries.user = request.user
+                shoes_entries.save()
+                return redirect('main:show_main')
+
+            context = {'form': form}
+            return render(request, "create_shoes_entry.html", context)
+
+    4. Menampilkan detail informasi pengguna yang sedang logged in seperti username dan menerapkan cookies seperti last login pada halaman utama aplikasi.
+
+        Implementasikan cookies untuk menyimpan data seperti waktu last login. Di view login, setelah pengguna berhasil login, simpan waktu login ke cookies menggunakan set_cookie().
+        `views.py`
+        def login_user(request):
+            if request.method == 'POST':
+                form = AuthenticationForm(data=request.POST)
+
+                if form.is_valid():
+                        user = form.get_user()
+                        login(request, user)
+                        response = HttpResponseRedirect(reverse("main:show_main"))
+                        response.set_cookie('last_login', str(datetime.datetime.now()))
+                        return response
+
+            else:
+                form = AuthenticationForm(request)
+            context = {'form': form}
+            return render(request, 'login.html', context)
+
+        `main.html`
+        <h5>Welcome! </h5>
+        <p>{{nama}}</p>
+
+        <h5>Sesi terakhir login: {{ last_login }}</h5>    

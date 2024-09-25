@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>Mental Health Tracker</h1>
+<h1>Tempat Jualan Sepatu Ternama dan Terkemuka di Dunia</h1>
 
 <h5>Nama Aplikasi: </h5>
 <p>{{namaAplikasi}}</p>
 
-<h5>nama: </h5>
+<h5>Welcome! </h5>
 <p>{{nama}}</p>
 
 <h5>kelas: </h5>
@@ -42,4 +42,9 @@
   <button>Add New Shoes Entry</button>
 </a>
 
+<a href="{% url 'main:logout' %}">
+  <button>Logout</button>
+</a>
+
+<h5>Sesi terakhir login: {{ last_login }}</h5>
 {% endblock content %}
