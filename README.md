@@ -185,16 +185,16 @@ Tugas 3
     ## Hasil Akses URL di Postman
 
     ### 1. Semua Data Sepatu dalam Format XML
-    ![XML All]("C:\Users\FARHAN\Downloads\github tugas 3\Screenshot (447).png")
+    ![Screenshot (447)](https://github.com/user-attachments/assets/76916160-db87-472b-95f7-085633013667)
 
     ### 2. Semua Data Sepatu dalam Format JSON
-    ![JSON All]("C:\Users\FARHAN\Downloads\github tugas 3\Screenshot (448).png")
+    ![Screenshot (448)](https://github.com/user-attachments/assets/975da0ea-6dc7-4d60-bd66-86f9f12cea73)
 
     ### 3. Data Sepatu Berdasarkan ID dalam Format XML
-    ![XML by ID]("C:\Users\FARHAN\Downloads\github tugas 3\Screenshot (449).png")
+    ![Screenshot (449)](https://github.com/user-attachments/assets/685a7adf-af33-4f27-9442-92c7367a8a44)
 
     ### 4. Data Sepatu Berdasarkan ID dalam Format JSON
-    ![JSON by ID]("C:\Users\FARHAN\Downloads\github tugas 3\Screenshot (450).png")
+    ![Screenshot (450)](https://github.com/user-attachments/assets/691b8fe8-cf48-487a-9f59-19c7099efad1)
 
 Tugas 3
 1. Apa perbedaan antara HttpResponseRedirect() dan redirect()?
