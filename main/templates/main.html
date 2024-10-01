@@ -1,50 +1,17 @@
 {% extends 'base.html' %}
+
 {% block content %}
-
-<h1>Tempat Jualan Sepatu Ternama dan Terkemuka di Dunia</h1>
-
-<h5>Nama Aplikasi: </h5>
-<p>{{namaAplikasi}}</p>
-
-<h5>Welcome! </h5>
-<p>{{nama}}</p>
-
-<h5>kelas: </h5>
-<p>{{kelas}}</p> 
-
-{% if not shoes_entries %}
-<p>Belum ada data shoes pada e-commerce.</p>
-{% else %}
-<table>
-  <tr>
-    <th>Shoes Name</th>
-    <th>Time</th>
-    <th>Description</th>
-    <th>Price</th>
-  </tr>
-
-  {% comment %} Berikut cara memperlihatkan data shoes di bawah baris ini 
-  {% endcomment %} 
-  {% for shoes_entry in shoes_entries %}
-  <tr>
-    <td>{{shoes_entry.name}}</td>
-    <td>{{shoes_entry.time}}</td>
-    <td>{{shoes_entry.description}}</td>
-    <td>{{shoes_entry.price}}</td>
-  </tr>
-  {% endfor %}
-</table>
-{% endif %}
-
-<br />
-
-<a href="{% url 'main:create_shoes_entry' %}">
-  <button>Add New Shoes Entry</button>
-</a>
-
-<a href="{% url 'main:logout' %}">
-  <button>Logout</button>
-</a>
-
-<h5>Sesi terakhir login: {{ last_login }}</h5>
-{% endblock content %}
+    {% include 'card_info.html' %}
+    
+    <h2 class="text-2xl font-bold mb-4">My Shoes Collection</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for shoes in shoes_entries %}
+            {% include 'card_shoes.html' with shoes=shoes %}
+        {% empty %}
+            <p class="col-span-full text-center text-gray-500">No shoes entries yet. Add some!</p>
+        {% endfor %}
+    </div>
+    
+    <a href="{% url 'main:create_shoes_entry' %}" class="mt-6 inline-block bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add New Shoes</a>
+{% endblock %}

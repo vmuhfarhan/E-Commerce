@@ -1,25 +1,41 @@
-from django.shortcuts import render, redirect   # Tambahkan import redirect di baris ini
-from main.forms import ShoesEntryForm
-from main.models import Sepatu
-from django.core import serializers
-from django.contrib import messages
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-
 import datetime
+from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from django.core import serializers
+from main.forms import ShoesEntryForm
+from main.models import ShoesEntry
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+
+def show_xml(request):
+    data = ShoesEntry.objects.all()
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+
+def show_json(request):
+    data = ShoesEntry.objects.all()
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+
+def show_xml_by_id(request, id):
+    data = ShoesEntry.objects.filter(pk=id)
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+
+def show_json_by_id(request, id):
+    data = ShoesEntry.objects.filter(pk=id)
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+
 @login_required(login_url='/login')
 def show_main(request):
-    shoes_entries = Sepatu.objects.filter(user=request.user)
+    shoes_entries = ShoesEntry.objects.filter(user=request.user)
 
     context = {
-        'namaAplikasi' : 'E-Commerce',
-        'nama': request.user.username,
-        'kelas': 'PBP A',
+        'name': request.user.username,
+        'class': 'PBP A',
+        'npm' : '2306231422',
         'shoes_entries': shoes_entries,
         'last_login': request.COOKIES['last_login'],
     }
@@ -30,29 +46,29 @@ def create_shoes_entry(request):
     form = ShoesEntryForm(request.POST or None)
 
     if form.is_valid() and request.method == "POST":
-        shoes_entries = form.save(commit=False)
-        shoes_entries.user = request.user
-        shoes_entries.save()
+        shoes_entry = form.save(commit=False)
+        shoes_entry.user = request.user
+        shoes_entry.save()
         return redirect('main:show_main')
 
     context = {'form': form}
     return render(request, "create_shoes_entry.html", context)
 
-def show_xml(request):
-    data = Sepatu.objects.all()
-    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+def edit_shoes(request, id):
+    shoes = ShoesEntry.objects.get(pk = id)
+    form = ShoesEntryForm(request.POST or None, instance=shoes)
 
-def show_json(request):
-    data = Sepatu.objects.all()
-    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+    if form.is_valid() and request.method == "POST":
+        form.save()
+        return HttpResponseRedirect(reverse('main:show_main'))
 
-def show_xml_by_id(request, id):
-    data = Sepatu.objects.filter(pk=id)
-    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+    context = {'form': form}
+    return render(request, "edit_shoes.html", context)
 
-def show_json_by_id(request, id):
-    data = Sepatu.objects.filter(pk=id)
-    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+def delete_shoes(request, id):
+    shoes = ShoesEntry.objects.get(pk = id)
+    shoes.delete()
+    return HttpResponseRedirect(reverse('main:show_main'))
 
 def register(request):
     form = UserCreationForm()

@@ -196,7 +196,7 @@ Tugas 3
     ### 4. Data Sepatu Berdasarkan ID dalam Format JSON
     ![Screenshot (450)](https://github.com/user-attachments/assets/691b8fe8-cf48-487a-9f59-19c7099efad1)
 
-Tugas 3
+Tugas 4
 1. Apa perbedaan antara HttpResponseRedirect() dan redirect()?
     - HttpResponseRedirect() adalah class Django yang digunakan untuk mengarahkan (redirect) pengguna ke URL tertentu. HttpResponseRedirect() memerlukan argumen berupa URL yang dituju. Ini adalah respons HTTP dengan status code 302 yang mengarahkan browser untuk menuju URL baru.
     - redirect() adalah shortcut yang lebih praktis untuk melakukan pengalihan (redirect) dalam Django. Selain URL, redirect() dapat menerima nama view, bahkan objek model sebagai argumen. Fungsi ini secara otomatis menangani detail pengalihan dan mempermudah penggunaannya.
@@ -370,3 +370,271 @@ Tugas 3
         <p>{{nama}}</p>
 
         <h5>Sesi terakhir login: {{ last_login }}</h5>    
+
+Tugas 5
+1. Jika terdapat beberapa CSS selector untuk suatu elemen HTML, jelaskan urutan prioritas pengambilan CSS selector tersebut!
+    
+    Prioritas CSS atau spesifisitas adalah cara browser menentukan aturan CSS mana yang diterapkan pada elemen HTML jika ada beberapa selector yang sesuai. Urutan prioritasnya adalah sebagai berikut:
+    1. Inline Styles: Gaya yang diterapkan langsung pada elemen menggunakan atribut style. Contoh: <div style="color: red;">.
+    2. IDs: Selector yang menggunakan ID. Contoh: #myId.
+    3. Classes, Attributes, dan Pseudo-classes: Selector yang menggunakan kelas, atribut, atau pseudo-classes. Contoh: .myClass, [type="text"], dan :hover.
+    4. Element (Tag) dan Pseudo-elements: Selector yang menggunakan elemen HTML atau pseudo-elements. Contoh: div, p, dan ::before.
+    
+    Jika beberapa selector memiliki spesifisitas yang sama, urutan terakhir yang diterapkan akan digunakan, berdasarkan urutan kemunculan di dalam CSS (last rule wins).
+
+2. Mengapa responsive design menjadi konsep yang penting dalam pengembangan aplikasi web? Berikan contoh aplikasi yang sudah dan belum menerapkan responsive design!
+
+    Responsive design adalah pendekatan dalam pengembangan web yang memastikan bahwa situs web dapat berfungsi dengan baik di berbagai perangkat dan ukuran layar, seperti desktop, tablet, dan ponsel pintar. Konsep ini penting karena memberikan pengalaman yang konsisten dan nyaman di semua perangkat. Selain itu, responsive design memudahkan pencarian karena Google lebih menyukai situs web yang responsif dalam hasil pencariannya. Responsive design juga memastikan konten dapat diakses oleh lebih banyak pengguna.
+
+    Contoh yang sudah responsive design : Tokopedia
+    Contoh yang belum responsive design : Pacil Web Service (PWS)
+
+3. Jelaskan perbedaan antara margin, border, dan padding, serta cara untuk mengimplementasikan ketiga hal tersebut!
+
+    Margin: Ruang di luar elemen. Margin memisahkan elemen dari elemen lain. Dapat diatur menggunakan CSS: margin: 10px;.
+    Border: Garis yang mengelilingi elemen. Border dapat memiliki berbagai gaya, lebar, dan warna. Contoh: border: 1px solid black;.
+    Padding: Ruang di dalam elemen, antara konten dan border. Padding membuat konten tidak langsung menyentuh border. Contoh: padding: 10px;.
+
+    contoh implementasi:
+    .box {
+    margin: 20px;    ---> Ruang luar
+    border: 2px solid black;  ---> Garis border
+    padding: 15px;   ---> Ruang dalam
+    }
+
+4. Jelaskan konsep flex box dan grid layout beserta kegunaannya!
+
+    Flexbox adalah model layout CSS yang digunakan untuk mendistribusikan ruang di antara item dalam kontainer. Dengan flexbox, Anda dapat dengan mudah mengatur item dalam satu dimensi (baik horizontal maupun vertikal). Kegunaannya meliputi penataan elemen dalam baris atau kolom serta pengaturan ruang antar elemen secara otomatis.
+
+    contoh implementasi:
+    .container {
+    display: flex;
+    justify-content: space-between; /* Mengatur jarak antar item */
+    }
+
+    Grid Layout: Grid layout adalah sistem layout dua dimensi yang memungkinkan Anda untuk membuat tata letak yang lebih kompleks. Anda dapat mengatur elemen dalam baris dan kolom secara bersamaan. Kegunaannya meliputi pembuatan tata letak yang lebih terstruktur dan pengaturan elemen dalam area grid dengan lebih fleksibel.
+
+    contoh implementasi:
+    .grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Membagi menjadi 3 kolom */
+    gap: 10px; /* Jarak antar elemen */
+    }
+
+5. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial)!
+
+    1. Implementasikan fungsi untuk menghapus dan mengedit product.
+
+        `views.py`
+        **fungsi untuk meng-edit product
+        def edit_shoes(request, id):
+            shoes = ShoesEntry.objects.get(pk = id)
+            form = ShoesEntryForm(request.POST or None, instance=shoes)
+
+            if form.is_valid() and request.method == "POST":
+                form.save()
+                return HttpResponseRedirect(reverse('main:show_main'))
+
+            context = {'form': form}
+            return render(request, "edit_shoes.html", context)
+
+        **fungsi untuk menghapus product
+        def delete_shoes(request, id):
+            shoes = ShoesEntry.objects.get(pk = id)
+            shoes.delete()
+            return HttpResponseRedirect(reverse('main:show_main'))
+    
+    2. Kustomisasi desain pada template HTML yang telah dibuat pada tugas-tugas sebelumnya menggunakan CSS atau CSS framework (seperti Bootstrap, Tailwind, Bulma) dengan ketentuan sebagai berikut:
+
+        `login.html`
+        {% extends 'base.html' %}
+
+        {% block content %}
+        <div class="max-w-md mx-auto bg-white shadow-md rounded-lg p-6">
+            <h1 class="text-2xl font-bold mb-6">Login</h1>
+            <form method="POST">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="mb-4">
+                        <label for="{{ field.id_for_label }}" class="block text-gray-700 font-bold mb-2">{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Login</button>
+            </form>
+            <p class="mt-4">Don't have an account? <a href="{% url 'main:register' %}" class="text-blue-500 hover:underline">Register here</a></p>
+        </div>
+        {% endblock %}
+
+
+        `register.html`
+        {% extends 'base.html' %}
+
+        {% block content %}
+        <div class="max-w-md mx-auto bg-white shadow-md rounded-lg p-6">
+            <h1 class="text-2xl font-bold mb-6">Register</h1>
+            <form method="POST">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="mb-4">
+                        <label for="{{ field.id_for_label }}" class="block text-gray-700 font-bold mb-2">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="text-sm text-gray-500 mt-1">{{ field.help_text }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Register</button>
+            </form>
+            <p class="mt-4">Already have an account? <a href="{% url 'main:login' %}" class="text-blue-500 hover:underline">Login here</a></p>
+        </div>
+        {% endblock %}
+
+
+        `create_shoes_entry.html`
+        {% extends 'base.html' %}
+
+        {% block content %}
+        <div class="max-w-md mx-auto bg-white shadow-md rounded-lg p-6">
+            <h1 class="text-2xl font-bold mb-6">Create New Shoes Entry</h1>
+            <form method="POST">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="mb-4">
+                        <label for="{{ field.id_for_label }}" class="block text-gray-700 font-bold mb-2">{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Create</button>
+            </form>
+        </div>
+        {% endblock %}
+
+
+        `card_shoes.html`
+        <div class="bg-white shadow-md rounded-lg p-6 mb-4">
+            <h3 class="text-xl font-bold mb-2">{{ shoes.name }}</h3>
+            <p class="text-gray-600 mb-2">{{ shoes.description }}</p>
+            <p class="text-lg font-semibold mb-4">${{ shoes.price }}</p>
+            <div class="flex justify-between">
+                <a href="{% url 'main:edit_shoes' shoes.id %}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Edit</a>
+                <a href="{% url 'main:delete_shoes' shoes.id %}" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Delete</a>
+            </div>
+            </div>
+
+
+        `main.html`
+        {% extends 'base.html' %}
+
+        {% block content %}
+            {% include 'card_info.html' %}
+            
+            <h2 class="text-2xl font-bold mb-4">My Shoes Collection</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for shoes in shoes_entries %}
+                    {% include 'card_shoes.html' with shoes=shoes %}
+                {% empty %}
+                    <p class="col-span-full text-center text-gray-500">No shoes entries yet. Add some!</p>
+                {% endfor %}
+            </div>
+            
+            <a href="{% url 'main:create_shoes_entry' %}" class="mt-6 inline-block bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add New Shoes</a>
+        {% endblock %}
+
+
+        `edit_shoes.html`
+        {% extends 'base.html' %}
+
+        {% block content %}
+        <div class="max-w-md mx-auto bg-white shadow-md rounded-lg p-6">
+            <h1 class="text-2xl font-bold mb-6">Edit Shoes Entry</h1>
+            <form method="POST">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="mb-4">
+                        <label for="{{ field.id_for_label }}" class="block text-gray-700 font-bold mb-2">{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save Changes</button>
+            </form>
+        </div>
+        {% endblock %}
+
+
+        `base.html`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>{% block title %}E-Commerce{% endblock %}</title>
+            {% load static %}
+            <link rel="stylesheet" href="{% static 'css/global.css' %}">
+            <script src="https://cdn.tailwindcss.com"></script>
+        </head>
+        <body class="bg-gray-100 min-h-screen flex flex-col">
+            {% include 'navbar.html' %}
+            <main class="flex-grow container mx-auto px-4 py-8">
+                {% block content %}
+                {% endblock %}
+            </main>
+            <footer class="bg-gray-800 text-white py-4">
+                <div class="container mx-auto text-center">
+                    &copy; 2024 E-Commerce. All rights reserved.
+                </div>
+            </footer>
+        </body>
+        </html>
+
+
+        `navbar.html`
+        <nav class="bg-gray-800 text-white">
+            <div class="container mx-auto px-4">
+                <div class="flex items-center justify-between h-16">
+                    <a href="{% url 'main:show_main' %}" class="text-xl font-bold">E-Commerce</a>
+                    
+                    <!-- Hamburger button for mobile -->
+                    <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                    
+                    <!-- Desktop menu -->
+                    <div class="hidden md:flex space-x-4">
+                        {% if user.is_authenticated %}
+                            <span class="text-gray-300 mr-4">Welcome, {{ user.username }}</span>
+                            <a href="{% url 'main:logout' %}" class="hover:text-gray-300">Logout</a>
+                        {% else %}
+                            <a href="{% url 'main:login' %}" class="hover:text-gray-300">Login</a>
+                            <a href="{% url 'main:register' %}" class="hover:text-gray-300">Register</a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Mobile menu -->
+                <div id="mobile-menu" class="hidden md:hidden mt-2">
+                    {% if user.is_authenticated %}
+                        <div class="text-gray-300 py-2">Welcome, {{ user.username }}</div>
+                        <a href="{% url 'main:logout' %}" class="block py-2 hover:text-gray-300">Logout</a>
+                    {% else %}
+                        <a href="{% url 'main:login' %}" class="block py-2 hover:text-gray-300">Login</a>
+                        <a href="{% url 'main:register' %}" class="block py-2 hover:text-gray-300">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+
+        <script>
+            document.getElementById('mobile-menu-button').addEventListener('click', function() {
+                var menu = document.getElementById('mobile-menu');
+                menu.classList.toggle('hidden');
+            });
+        </script>
+
+
+
+
+
