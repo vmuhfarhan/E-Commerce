@@ -634,6 +634,24 @@ Tugas 5
             });
         </script>
 
+Tugas 6
+1. Jelaskan manfaat dari penggunaan JavaScript dalam pengembangan aplikasi web!
+    - Interaktivitas: JavaScript memungkinkan pembuatan elemen interaktif pada halaman web.
+    - Dinamis: Memungkinkan perubahan konten tanpa me-reload seluruh halaman.
+    - Validasi form: Dapat melakukan validasi input sebelum dikirim ke server.
+    - AJAX: Memungkinkan komunikasi asinkronus dengan server.
+    - Manipulasi DOM: Memungkinkan perubahan struktur, gaya, dan konten halaman secara dinamis.
+
+2. Jelaskan fungsi dari penggunaan await ketika kita menggunakan fetch()! Apa yang akan terjadi jika kita tidak menggunakan await?
+    await digunakan untuk menunggu promise selesai sebelum melanjutkan eksekusi kode. Jika tidak menggunakan await, kode akan terus berjalan tanpa menunggu respons dari fetch(), yang bisa menyebabkan error atau perilaku yang tidak diinginkan.
+
+3. Mengapa kita perlu menggunakan decorator csrf_exempt pada view yang akan digunakan untuk AJAX POST?
+    csrf_exempt digunakan untuk mengabaikan CSRF protection pada view tertentu. Hal ini diperlukan untuk AJAX POST karena request AJAX tidak membawa CSRF token secara default. Namun, penggunaannya harus hati-hati karena bisa membuka celah keamanan.
+
+4. Pada tutorial PBP minggu ini, pembersihan data input pengguna dilakukan di belakang (backend) juga. Mengapa hal tersebut tidak dilakukan di frontend saja?
+    Validasi di frontend bisa dibypass oleh user yang mahir. Backend validation memastikan data yang masuk ke database sudah bersih dan aman. Hal ini adalah praktek keamanan yang baik untuk mencegah serangan seperti SQL injection.
+
+5. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial)!
 
 
 
