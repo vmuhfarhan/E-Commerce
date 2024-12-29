@@ -10,7 +10,7 @@
                 </svg>
             </button>
             
-            <!-- Desktop menu -->
+            <!-- Desktop menu (flex)-->
             <div class="hidden md:flex space-x-4">
                 {% if user.is_authenticated %}
                     <span class="text-gray-300 mr-4">Welcome, {{ user.username }}</span>
@@ -22,7 +22,7 @@
             </div>
         </div>
         
-        <!-- Mobile menu -->
+        <!-- Mobile menu (hidden) -->
         <div id="mobile-menu" class="hidden md:hidden mt-2">
             {% if user.is_authenticated %}
                 <div class="text-gray-300 py-2">Welcome, {{ user.username }}</div>
@@ -36,6 +36,7 @@
 </nav>
 
 <script>
+    //responsive 
     document.getElementById('mobile-menu-button').addEventListener('click', function() {
         var menu = document.getElementById('mobile-menu');
         menu.classList.toggle('hidden');
